@@ -33,7 +33,7 @@ func LLMResponseHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("api-key is ", apikey)
 
 	var prompt string = services.CraftColdEmailPrompt(requestPayload)
-	err = services.ApiCallerToGemini(prompt)
+	text,err := (services.ApiCallerToGemini(prompt))
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -42,6 +42,7 @@ func LLMResponseHandler(w http.ResponseWriter, r *http.Request) {
 			"message": "Something went wrong .Please try again",
 		}
 
+	
 		json.NewEncoder(w).Encode(response)
 		return
 	}
