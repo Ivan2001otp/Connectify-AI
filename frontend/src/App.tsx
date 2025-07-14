@@ -1,9 +1,10 @@
+import JoinRequestForm from "./pages/JoinRequestForm"
 
 
 function App() {
   return (
     <div>
-      <a className="text-red-500 text-4xl"> HDfasdf</a>
+      <JoinRequestForm/>
     </div>
   )
 }
