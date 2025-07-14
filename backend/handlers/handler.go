@@ -27,6 +27,8 @@ func LLMResponseHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(requestPayload)
 
 	var prompt string = services.CraftColdEmailPrompt(requestPayload)
+	
+	// here i make an api call
 	text, err := (services.ApiCallerToGemini(prompt))
 
 	if err != nil {

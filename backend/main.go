@@ -6,6 +6,7 @@ import (
 	"os"
 
 	handlers "connectify-ai-backend/handlers"
+	middleware "connectify-ai-backend/middleware"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
@@ -29,7 +30,10 @@ func main() {
 		AllowedOrigins:   []string{"http://localhost:5173"},
 	})
 
-	mainRouter.HandleFunc("/api/v1/generate-email", handlers.LLMResponseHandler).Methods("POST")
+	mainRouter.Handle("/api/v1/generate-email",
+		middleware.GlobalRateLimiterMiddleware(
+				http.HandlerFunc(handlers.LLMResponseHandler)),
+	).Methods("POST")
 
 	handler := corsOptions.Handler(mainRouter)
 
@@ -41,4 +45,3 @@ func main() {
 	log.Println("Backend running ...")
 	log.Fatal(http.ListenAndServe(":"+port, handler))
 }
-
