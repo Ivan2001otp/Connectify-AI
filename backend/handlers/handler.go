@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"os"
 )
 
 func LLMResponseHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,11 +25,6 @@ func LLMResponseHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("request payload is")
 	log.Println(requestPayload)
-
-	var apikey string = os.Getenv("GOOGLE_API_KEY")
-
-	//https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
-	log.Println("api-key is ", apikey)
 
 	var prompt string = services.CraftColdEmailPrompt(requestPayload)
 	text, err := (services.ApiCallerToGemini(prompt))
@@ -54,3 +48,10 @@ func LLMResponseHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 	w.WriteHeader(http.StatusOK)
 }
+
+/*
+{
+  "data": "Subject: Backend Developer - Immanuel Dsouza - Driven by Deloitte's Engineering\n\nDear Mr. Murthy,\n\nMy name is Immanuel Dsouza, and I'm writing to express my keen interest in Backend Developer opportunities at Deloitte. I've been consistently impressed by the challenging engineering tasks undertaken at Deloitte and the steep learning curve you provide for your engineers. This really resonates with my own aspirations.\n\nI've attached my resume for your review, highlighting my experience in [mention 1-2 relevant skills/technologies from the job description]. I am confident that my skills and passion would be a valuable asset to your team.\n\nThank you for your time and consideration. I would welcome the opportunity to discuss how I can contribute to Deloitte's success.\n\nSincerely,\n\nImmanuel Dsouza\n",
+  "status": 200
+}
+*/
