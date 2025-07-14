@@ -47,7 +47,6 @@ func ApiCallerToGemini(prompt string) (*string,error) {
 	url := os.Getenv("URL")
 	
 	var apikey string = os.Getenv("GOOGLE_API_KEY")
-	// log.Println("api-key is ", apikey)
 
 	
 	// build request
