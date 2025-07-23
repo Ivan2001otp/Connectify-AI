@@ -14,7 +14,8 @@ const JoinRequestForm = () => {
             employer : "",
             company : "",
             reason : "",
-            tone : "formal"
+            tone : "formal",
+            follow_up:"",
         }
     );
 
@@ -34,7 +35,7 @@ const JoinRequestForm = () => {
         >
             <div className="p-8 space-y-6 rounded-md shadow-md">
                 <h1 className='text-3xl font-bold text-center text-gray-800 mb-4'>
-                    Join our Awesome Community
+                    Use Connectify-AI
                 </h1>
 
                 {/* Full Name  */}
@@ -67,12 +68,19 @@ const JoinRequestForm = () => {
                 />
 
                 {/* Company */}
-                <Textarea
-                    placeholder='Why do you want to join the company?'
-                    value={formData.reason}
-                    onChange={(e) => handleChange("reason", e.target.value)}
-                    className='bg-white border rounded-lg px-4 py-2 min-h-[100px]'
-                />
+
+                {
+                    formData.tone !== "follow_up" && 
+                    <Textarea
+                        placeholder='Why do you want to join the company?'
+                        value={formData.reason}
+                        onChange={(e) => handleChange("follow_up", e.target.value)}
+                        className='bg-white border rounded-lg px-4 py-2 min-h-[100px]'
+                    />
+                }
+                
+
+
 
                 {/* dropdown */}
                 <div>
@@ -99,12 +107,23 @@ const JoinRequestForm = () => {
 
                             <SelectItem value="enthusiastic">Enthusiastic</SelectItem>
 
-                            <SelectItem
-                            value='casual'
-                            >Casual</SelectItem>
+                            <SelectItem value="follow_up">Follow-Up</SelectItem>
+
+                            <SelectItem  value='casual'>Casual</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
+
+                {
+                  formData.tone==="follow_up" &&   (
+                            <Textarea
+                                placeholder="Your follow up text goes here !"
+                                value={formData.follow_up}
+                                onChange={(e) => handleChange("follow_up", e.target.value)}
+                                className='bg-white border rounded-lg px-4 py-2 min-h-[100px]'
+                            />
+                    )
+                }
 
 
                 <Button
