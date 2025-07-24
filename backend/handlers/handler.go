@@ -26,7 +26,14 @@ func LLMResponseHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("request payload is")
 	log.Println(requestPayload)
 
-	var prompt string = services.CraftColdEmailPrompt(requestPayload)
+	var prompt string;
+
+	if (len(requestPayload.Follow_Up)==0) {
+	 prompt  = services.CraftColdEmailPrompt(requestPayload)
+
+	} else {
+		prompt = services.CraftFollowUpEmailPrompt(requestPayload);
+	}
 
 	// here i make an api call
 	text, err := (services.ApiCallerToGemini(prompt))

@@ -27,6 +27,23 @@ func CraftColdEmailPrompt(input models.ClientPayload) string {
 	)
 }
 
+
+func CraftFollowUpEmailPrompt(input models.ClientPayload) string {
+	return fmt.Sprintf(`Subject: Just wanted to bump this up 🚀
+
+Hey %s,
+
+I hope you’ve been having a great week! I wanted to quickly follow up on my previous note about the %s role at %s.
+I’m genuinely excited about the possibility of joining the %s team — especially because %s really resonates with me. I’d be thrilled to contribute and bring in fresh energy to the table!
+
+If it makes sense to chat further, I’d love to jump on a quick call or share more about how I can add value.
+Looking forward to hearing from you!
+
+Cheers,  
+%s
+`, input.Employer, input.Job_Role, input.Company, input.Company, input.Why_Company, input.User)
+}
+
 func ApiCallerToGemini(prompt string) (*string,error) {
 
 	payload := map[string]interface{}{

@@ -7,6 +7,7 @@ type ClientPayload struct {
 	Company     string `json:"company"`
 	Why_Company string `json:"why_company"`
 	Tone        string `json:"tone"`
+	Follow_Up  string `json : "follow_up"`
 }
 
 type ClientResponse struct {
