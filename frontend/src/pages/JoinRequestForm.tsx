@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { Trash2 } from 'lucide-react';
 import React, { useState } from 'react'
 
 const JoinRequestForm = () => {
@@ -18,6 +20,28 @@ const JoinRequestForm = () => {
             follow_up:"",
         }
     );
+
+    const [links, setLinks] = useState([{label:"", url :""}]);
+
+    const addLink = () => {
+        if (links.length < 10) {
+            setLinks([...links, {label:"", url :""}]);
+        }
+    };
+
+   const deleteLink = (index: number) => {
+    if (links.length > 1) {
+      const updated = [...links];
+      updated.splice(index, 1);
+      setLinks(updated);
+    }
+  };
+
+    const handleInputChange = (index:number, field:"label"|"url", url:string)=> {
+        const updated = [...links];
+        updated[index][field] = url;
+        setLinks(updated); 
+    };
 
     const handleChange = (field:string, value:string ) => {
         setFormData(prev => ({...prev, [field]:value}));
@@ -124,6 +148,67 @@ const JoinRequestForm = () => {
                             />
                     )
                 }
+
+
+
+                {/* all the hyperlink text  */}
+                <CardContent className='space-y-6 shadow-md rounded-lg border-2 py-4 border-slate-200'>
+                    {links.map((link, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-4 items-end"
+              >
+                <div>
+                  <Label htmlFor={`label-${index}`}>Link Text</Label>
+                  <Input
+                    id={`label-${index}`}
+                    value={link.label}
+                    placeholder="e.g. Google"
+                    onChange={(e) =>
+                      handleInputChange(index, "label", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor={`url-${index}`}>URL</Label>
+                  <Input
+                    id={`url-${index}`}
+                    value={link.url}
+                    placeholder="e.g. https://google.com"
+                    onChange={(e) =>
+                      handleInputChange(index, "url", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div className='flex justify-center items-end h-full pb-1'>
+                    <Button 
+                    variant="ghost"
+                    size="icon"
+                    disabled={links.length===1}
+                    onClick={()=>deleteLink(index)}
+                    >
+                        <Trash2 className='w-5 h-5 text-red-500'/>
+                    </Button>
+                </div>
+              </div>
+            ))}
+
+
+                    <div className='flex justify-start'>
+                        <Button
+                            variant="outline"
+                            onClick={addLink}
+                            disabled={links.length >= 10}
+                            className='sm:w-auto w-1/4 hover:bg-gray-700 hover:text-gray-200 hover:rounded-xl duration-300'
+                        >{links.length < 10 ? "Add Link" : "Limit Reached"} </Button>
+                    </div>
+                </CardContent>
+
+                
+
+               
 
 
                 <Button
