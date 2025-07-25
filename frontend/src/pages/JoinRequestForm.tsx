@@ -4,8 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { generateAiEmail } from '@/services/httpClient';
 import { Trash2 } from 'lucide-react';
 import React, { useState } from 'react'
+import { Clipboard } from 'lucide-react';
 
 const JoinRequestForm = () => {
  
@@ -21,6 +23,9 @@ const JoinRequestForm = () => {
         }
     );
 
+    
+    const [previewEmail, setPreviewEmail] = useState('');
+    const [showEmailCard, setEmailCardVisibility] = useState(false);
     const [links, setLinks] = useState([{label:"", url :""}]);
 
     const addLink = () => {
@@ -47,12 +52,47 @@ const JoinRequestForm = () => {
         setFormData(prev => ({...prev, [field]:value}));
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async() => {
         console.log("Form data : ", formData);
+
+        let requestPayload  = {
+            user : formData.name,
+            job_role : formData.jobRole,
+            employer : formData.employer,
+            company : formData.company,
+            why_company : formData.reason,
+            tone: formData.tone,
+            follow_up:formData.follow_up
+        }
+
+        let response = await generateAiEmail(requestPayload);
+        console.log("Here this the response : ");
+        console.log(response);
+
+        console.log("email template ");
+        console.log(response["data"]);
+        /*
+        let t : string = response['data'];
+        let emailChunks:string[] = t.split("\\n")
+        console.log("email chunks leng ", emailChunks.length);
+        let chunk :string ="";
+
+        for(let i=0;i<emailChunks.length;i++) {
+            chunk += emailChunks[i] + '\n';
+        }
+
+        console.log("Here is the chunk : ");
+        console.log(chunk);
+        */
+        setPreviewEmail(response['data']);
+
+        setEmailCardVisibility(true);
     };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-r from-indigo-100 to-blue-300">
+    <div className="min-h-screen flex justify-center p-4 bg-gradient-to-r from-indigo-100 to-blue-300">
+    
+    <div className='w-full max-w-4xl flex flex-col items-center gap-6'>
 
         <Card
             className="w-full max-w-3xl shadow-2xl border-0"
@@ -98,7 +138,7 @@ const JoinRequestForm = () => {
                     <Textarea
                         placeholder='Why do you want to join the company?'
                         value={formData.reason}
-                        onChange={(e) => handleChange("follow_up", e.target.value)}
+                        onChange={(e) => handleChange("reason", e.target.value)}
                         className='bg-white border rounded-lg px-4 py-2 min-h-[100px]'
                     />
                 }
@@ -221,9 +261,60 @@ const JoinRequestForm = () => {
             </div>  
         </Card>
 
+       {
+        showEmailCard &&    (
+            <Card
+                className='w-full max-w-3xl mx-auto mt-6 shadow-xl border-0 bg-white relative'
+            >
+                <CardContent className='p-6'>
+
+                    <div className='flex justify-between items-center mb-4'>
+                        <h2 className='text-2xl font-semibold text-gray-800'>Preview</h2>
+                        <button
+                            className='text-gray-500 hover:text-black transition'
+                            aria-label="Copy email text"
+                            onClick={()=>{
+                                navigator.clipboard.writeText(previewEmail);
+                            }}
+                        >
+                            <Clipboard/>
+                        </button>
+                    </div>
+
+                    <pre className='whitespace-pre-wrap bg-gray-50 border rounded-lg p-4 text-gray-700 max-h-[400px] overflow-y-auto'>
+                        {previewEmail}
+                    </pre>
+
+                    {/* links sections */}
+                    {
+                        links.length > 0 && (
+                            <div className='mt-6'>
+                                <ul>
+                                    {
+                                        links.map((link, index)=> (
+                                            <li key={index}>
+                                                <a
+                                                    href={link.url}
+                                                    target='_blank'
+                                                    rel='noopener noreferrer'
+                                                    className='text-blue-600 underline hover:text-blue-800 transition'
+                                                >{link.label}</a>
+                                            </li>
+                                        ))
+                                    }
+                                </ul>
+                            </div>
+                        )
+                    }
+                </CardContent>
+            </Card>
+        )
+       }
+       </div>
     </div>
   )
 }
 
 export default JoinRequestForm
+
 
