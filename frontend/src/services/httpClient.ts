@@ -31,7 +31,11 @@ export const generateAiEmail = async (payload: GenerateMailPayload) => {
         return response.data;
     } catch (error: any) {
         console.error("Something went wrong : ", error);
-        throw error;
+
+        if (error.response?.status === 429) {
+            throw new Error("TOO_MANY_REQUESTS");
+        }
+        throw new Error("GENERIC_ERROR");
     }
 }
 

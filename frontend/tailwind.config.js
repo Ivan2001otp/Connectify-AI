@@ -7,6 +7,21 @@ export default {
   ],
   theme: {
   	extend: {
+		keyframes:{
+			'hop' : {
+				'0%': { backgroundColor: '#1e293b' },      // gray-700
+				'14%': { backgroundColor: '#bae6fd' },      // blue-200
+				'28%': { backgroundColor: '#d1fae5' },      // orange-200
+				'42%': { backgroundColor: '#fef3c7' }, 
+				'57%': { backgroundColor: '#ffe4e6' }, 
+				'71%': { backgroundColor: '#e0e7ff' }, 
+				'85%': { backgroundColor: '#f4f4f5' }, 
+				'100%': { backgroundColor: '#1e293b' }, 
+			},
+		},
+		animation : {
+			hop:'hop 12s ease-in-out infinite',
+		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
