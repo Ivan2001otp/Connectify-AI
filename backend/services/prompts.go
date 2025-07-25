@@ -11,13 +11,14 @@ import (
 	"os"
 )
 
-func CraftColdEmailPrompt(input models.ClientPayload) string {	
-	return fmt.Sprintf(`You are professional and successfull cold email writer helping job seekers.
-		Write a %s  cold email  to a recruiter/HR/Hiring manager(make it generic) named %s at %s.
+func CraftColdEmailPrompt(input models.ClientPayload) string {
+	return fmt.Sprintf(`You are an expert cold email writer helping job seekers craft concise, personalized, and respectful messages.
 
-		The sender is %s, who is applying for the role of %s. They are passionate about the company because:"%s"
+Write a %s cold email addressed to %s, who works at %s in a recruiting or decision-making role.
 
-		Keep the email short, personalized and respectful.`,
+The sender is %s, applying for the position of %s. They are genuinely excited about the opportunity because: "%s".
+
+Keep the email short (under 120 words), engaging, and naturally conversational. Do not include any placeholders or formalities like "To Whom It May Concern". Write in a tone that feels human, confident, and tailored.`,
 		input.Tone,
 		input.Employer,
 		input.Company,
@@ -27,120 +28,116 @@ func CraftColdEmailPrompt(input models.ClientPayload) string {
 	)
 }
 
-
 func CraftFollowUpEmailPrompt(input models.ClientPayload) string {
-	return fmt.Sprintf(`Subject: Just wanted to bump this up 🚀
+	return fmt.Sprintf(`Subject: Following up on the %s opportunity at %s
 
-Hey %s,
+Hi %s,
 
-I hope you’ve been having a great week! I wanted to quickly follow up on my previous note about the %s role at %s.
-I’m genuinely excited about the possibility of joining the %s team — especially because %s really resonates with me. I’d be thrilled to contribute and bring in fresh energy to the table!
+Just wanted to follow up on my note regarding the %s role at %s. I’m genuinely excited about the possibility of contributing to the team — especially since %s really aligns with what drives me.
 
-If it makes sense to chat further, I’d love to jump on a quick call or share more about how I can add value.
-Looking forward to hearing from you!
+If it feels like a good fit, I’d be glad to share how I can add value or hop on a quick call to chat more.
 
-Cheers,  
+Appreciate your time and looking forward to connecting!
+
+Best,  
 %s
-`, input.Employer, input.Job_Role, input.Company, input.Company, input.Why_Company, input.User)
+`, input.Job_Role, input.Company, input.Employer, input.Job_Role, input.Company, input.Why_Company, input.User)
 }
 
-func ApiCallerToGemini(prompt string) (*string,error) {
+func ApiCallerToGemini(prompt string) (*string, error) {
 
 	payload := map[string]interface{}{
 		"contents": map[string]interface{}{
-			"parts":[]map[string]interface{}{
-					{"text":prompt},
-				},	
+			"parts": []map[string]interface{}{
+				{"text": prompt},
+			},
 		},
 	}
 
 	byteData, err := json.Marshal(payload)
 
 	if err != nil {
-		log.Fatalf("Could not parse the request payload of Gemini - %v",err);
-		return nil,err;
-	}	
+		log.Fatalf("Could not parse the request payload of Gemini - %v", err)
+		return nil, err
+	}
 
 	url := os.Getenv("URL")
-	
+
 	var apikey string = os.Getenv("GOOGLE_API_KEY")
 
-	
 	// build request
-	apiRequest, err := http.NewRequest("POST",url,bytes.NewBuffer(byteData));
+	apiRequest, err := http.NewRequest("POST", url, bytes.NewBuffer(byteData))
 	if err != nil {
-		log.Fatal("Failed to build request - ", err);
-		return nil,err;
+		log.Fatal("Failed to build request - ", err)
+		return nil, err
 	}
 
 	// set headers.
-	apiRequest.Header.Set("Content-Type","application/json");
-	apiRequest.Header.Set("X-goog-api-key",apikey)
-
+	apiRequest.Header.Set("Content-Type", "application/json")
+	apiRequest.Header.Set("X-goog-api-key", apikey)
 
 	//send request
-	client := &http.Client{};
+	client := &http.Client{}
 
-	response, err := client.Do(apiRequest);
-	if (err != nil ){
-		log.Fatal("Failed to send API request -- ", err);
-		return nil,err;
+	response, err := client.Do(apiRequest)
+	if err != nil {
+		log.Fatal("Failed to send API request -- ", err)
+		return nil, err
 	}
-	
-	log.Println("The status of API-POST request to Gemini : ", response.StatusCode);
-	
-	defer response.Body.Close();
+
+	log.Println("The status of API-POST request to Gemini : ", response.StatusCode)
+
+	defer response.Body.Close()
 
 	if err != nil {
-		log.Println("Something went wrong while fetching response : ", err);
-		return nil,err;
+		log.Println("Something went wrong while fetching response : ", err)
+		return nil, err
 	}
 
 	// parse response here
-	body, err := ioutil.ReadAll(response.Body);
+	body, err := ioutil.ReadAll(response.Body)
 
 	var responseJson map[string]interface{}
-	if err = json.Unmarshal(body, &responseJson);err != nil {
-		log.Println("Could not parse the Gemini Response byte data to json. ");
-		log.Println(err);
-		return nil,err;
+	if err = json.Unmarshal(body, &responseJson); err != nil {
+		log.Println("Could not parse the Gemini Response byte data to json. ")
+		log.Println(err)
+		return nil, err
 	}
 
-	log.Println("The Gemini API response");
-	log.Println(responseJson);
+	log.Println("The Gemini API response")
+	log.Println(responseJson)
 
-	ai_generated_email := pickContentFromJson(responseJson);
+	ai_generated_email := pickContentFromJson(responseJson)
 
-	return ai_generated_email,nil;
+	return ai_generated_email, nil
 }
 
-func pickContentFromJson(response map[string]interface{}) (*string){
-	candidates, ok := response["candidates"].([]interface{});
+func pickContentFromJson(response map[string]interface{}) *string {
+	candidates, ok := response["candidates"].([]interface{})
 
-	if (!ok || len(candidates)==0){ 
-		log.Println("Not candidate key in response");
-		return nil;
+	if !ok || len(candidates) == 0 {
+		log.Println("Not candidate key in response")
+		return nil
 	}
 
-	firstCandidate := candidates[0].(map[string]interface{});
-	content := firstCandidate["content"].(map[string]interface{});
+	firstCandidate := candidates[0].(map[string]interface{})
+	content := firstCandidate["content"].(map[string]interface{})
 	parts := content["parts"].([]interface{})
 
-		if (len(parts) > 0) {
-			part := parts[0].(map[string]interface{});
-			text,ok := part["text"].(string)
+	if len(parts) > 0 {
+		part := parts[0].(map[string]interface{})
+		text, ok := part["text"].(string)
 
-			if (ok ) {
-				log.Println("Extract Text : \n", text);
-				return &(text);
-			} else {
-				log.Println("Text field not found !")
-			}
+		if ok {
+			log.Println("Extract Text : \n", text)
+			return &(text)
+		} else {
+			log.Println("Text field not found !")
 		}
+	}
 
-		return nil;
-	}	
-
+	return nil
+}
 
 /*
 map[candidates:[map[avgLogprobs:-0.2859400079605427 content:map[parts:[map[text:Subject: Software Engineer 2 - Ivan [Your Last Name]
