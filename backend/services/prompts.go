@@ -29,19 +29,77 @@ Keep the email short (under 120 words), engaging, and naturally conversational. 
 }
 
 func CraftFollowUpEmailPrompt(input models.ClientPayload) string {
-	return fmt.Sprintf(`Subject: Following up on the %s opportunity at %s
+	return fmt.Sprintf(`You are an expert cold email writer who helps job seekers write friendly, confident, and effective follow-up emails.
+Write a follow-up %s cold email to %s, who works at %s and may be involved in hiring decisions.
+The sender is %s, applying for the position of %s. They’re excited about the opportunity because: "%s".
 
-Hi %s,
+Make the follow-up feel warm, respectful, and easy to respond to. Avoid overthinking, robotic language, or placeholder-style formality.
+Keep it short (under 120 words), conversational, and show genuine enthusiasm about reconnecting. Do not explain the writing process — write as if the user is sending this directly.`,
+		input.Tone,
+		input.Employer,
+		input.Company,
+		input.User,
+		input.Job_Role,
+		input.Follow_Up,
+	)
+}
 
-Just wanted to follow up on my note regarding the %s role at %s. I’m genuinely excited about the possibility of contributing to the team — especially since %s really aligns with what drives me.
+func CraftRegenerateEmailPrompt(input models.ClientPayload) string {
 
-If it feels like a good fit, I’d be glad to share how I can add value or hop on a quick call to chat more.
+	if len(input.Follow_Up) == 0 {
 
-Appreciate your time and looking forward to connecting!
+		fmt.Sprintf(`
+You are a professional cold email copywriter.
+Recreate a significantly improved version of a cold email to a recruiter/HR/Hiring Manager/Director.
+The previous version was not satisfactory. Rewrite it completely from scratch using the details below.
 
-Best,  
-%s
-`, input.Job_Role, input.Company, input.Employer, input.Job_Role, input.Company, input.Why_Company, input.User)
+Do not explain your thought process. Do not include any placeholders or commentary. Only return the final, polished cold email.
+
+Details:
+- Recipient's name: %s
+- Company: %s
+- Role being applied for: %s
+- Sender's name: %s
+- Why the sender likes this company: "%s"
+- Tone to use: %s
+
+Keep it short, confident, respectful, and personalized.
+`,
+			input.Employer,
+			input.Company,
+			input.Job_Role,
+			input.User,
+			input.Why_Company,
+			input.Tone,
+		)
+
+	}
+
+	return fmt.Sprintf(`
+You are a professional cold email copywriter.
+Recreate a significantly improved version of a cold email to a recruiter/HR/Hiring Manager/Director.
+The previous version was not satisfactory. Rewrite it completely from scratch using the details below.
+
+Do not explain your thought process. Do not include any placeholders or commentary. Only return the final, polished cold email.
+
+Details:
+- Recipient's name: %s
+- Company: %s
+- Role being applied for: %s
+- Sender's name: %s
+- Follow up information: "%s"
+- Tone to use: %s
+
+Keep it short, confident, respectful, and personalized.
+`,
+		input.Employer,
+		input.Company,
+		input.Job_Role,
+		input.User,
+		input.Follow_Up,
+		input.Tone,
+	)
+
 }
 
 func ApiCallerToGemini(prompt string) (*string, error) {

@@ -7,12 +7,63 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func LLMResponseHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "only POST method is allowed", http.StatusBadRequest)
+		return
+	}
+
+	params := r.URL.Query()
+	flagStr := params.Get("flag") //boolean
+	flag, _ := strconv.ParseBool(flagStr)
+
+	if !flag {
+		var requestPayload models.ClientPayload
+		err := json.NewDecoder(r.Body).Decode(&requestPayload)
+
+		if err != nil {
+			log.Fatalf("Something went wrong while parsing request body - %v", err)
+			return
+		}
+
+		log.Println("request payload is")
+		log.Println(requestPayload)
+		var prompt string
+
+		if requestPayload.Tone != "follow_up" {
+			log.Println("Writing to a solid outbound leads")
+			prompt = services.CraftColdEmailPrompt(requestPayload)
+
+		} else {
+			log.Println("Following up to a solid outbound leads")
+			prompt = services.CraftFollowUpEmailPrompt(requestPayload)
+		}
+
+		fmt.Println("Here is the prompt : ")
+		text, err := (services.ApiCallerToGemini(prompt))
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			response := map[string]interface{}{
+				"status":  http.StatusInternalServerError,
+				"message": "Something went wrong .Please try again",
+			}
+
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+
+		response := map[string]interface{}{
+			"data":   text,
+			"status": http.StatusOK,
+		}
+
+		json.NewEncoder(w).Encode(response)
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 
@@ -27,19 +78,11 @@ func LLMResponseHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println("request payload is")
 	log.Println(requestPayload)
 
-	var prompt string;
+	var prompt string
+	prompt = services.CraftRegenerateEmailPrompt(requestPayload)
+	fmt.Println(prompt)
 
-	if (len(requestPayload.Follow_Up)==0) {
-	 prompt  = services.CraftColdEmailPrompt(requestPayload)
-
-	} else {
-		prompt = services.CraftFollowUpEmailPrompt(requestPayload);
-	}
-
-	fmt.Println("Here is the prompt : ");
-	fmt.Println(prompt);
-	// here i make an api call
-	text, err := (services.ApiCallerToGemini(prompt));
+	text, err := (services.ApiCallerToGemini(prompt))
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -59,9 +102,9 @@ func LLMResponseHandler(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(response)
 	w.WriteHeader(http.StatusOK)
+	return
+
 }
-
-
 
 // follow mail response
 /*
