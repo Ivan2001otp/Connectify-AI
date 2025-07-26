@@ -1,17 +1,6 @@
 import axios from "axios";
 
 const BASE_URL = "http://localhost:8080/api/v1";
-/* 
-{
-  "user": "Desmond",
-  "job_role": "Software Engineer",
-  "employer": "Madhu Marvin",
-  "company": "Shell",
-  "why_company": "",
-  "tone": "Humble",
-  "follow_up":"Wanna follow up for the software engineer role in Shell"
-}
-*/
 
 export interface GenerateMailPayload {
     user: string;
@@ -25,6 +14,7 @@ export interface GenerateMailPayload {
 
 
 export const generateDissatisfiedEmail = async (payload : GenerateMailPayload, flag : boolean) => {
+    console.log(import.meta.env.BASE_URL);
     try {
         const response = await axios.post(`${BASE_URL}/generate-email`, payload,{
             params:{
@@ -46,6 +36,8 @@ export const generateDissatisfiedEmail = async (payload : GenerateMailPayload, f
 }
 
 export const generateAiEmail = async (payload: GenerateMailPayload) => {
+    console.log(import.meta.env.BASE_URL);
+
     try {
         const response = await axios.post(`${BASE_URL}/generate-email`, payload,{
             params: {

@@ -201,8 +201,8 @@ const JoinRequestForm = () => {
               </h1>
             </div>
 
-            <p className="text-center text-gray-500 text-sm">
-              Generate personalized cold emails for job outreach
+            <p className="text-center text-gray-500 text-sm font-bold">
+              Generate personalized cold emails for job outreach 
             </p>
 
             {/* Full Name  */}
