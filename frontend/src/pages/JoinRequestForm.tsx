@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import connectifyLogo from './assets/Connectify-AI.png';
 import {
   Select,
   SelectContent,
@@ -192,8 +191,8 @@ const JoinRequestForm = () => {
             {/* <img className="rounded-lg" src="./src/assets/Connectify-AI.png" width={60} height={60}/> */}
             <div className="flex items-center justify-center space-x-4">
               <img
-                src={connectifyLogo} // ✅ replace with your actual path
-                alt="Connectify AI Logo"
+                src="/Connectify-AI.png" // ✅ replace with your actual path
+                alt="Connectify AI "
                 width={70} height={70}
                 className=" rounded-md"
               />
