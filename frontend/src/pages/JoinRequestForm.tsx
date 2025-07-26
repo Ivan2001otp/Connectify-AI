@@ -43,7 +43,7 @@ const JoinRequestForm = () => {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(previewEmail);
-    toast.success("Copied")
+    toast.success("Copied");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -106,7 +106,7 @@ const JoinRequestForm = () => {
 
       setPreviewEmail(response["data"]);
       setEmailCardVisibility(true);
-      toast.success("success")
+      toast.success("success");
     } catch (error: any) {
       console.log("I caught the error at the frontend.");
       if (error.message === "TOO_MANY_REQUESTS") {
@@ -129,6 +129,12 @@ const JoinRequestForm = () => {
     if (!validateForm()) {
       setLoading(false);
       return;
+    }
+
+    if (formData.tone === "follow_up") {
+      formData.reason = "";
+    } else {
+      formData.follow_up = "";
     }
 
     if (formData.reason.length === 0 && formData.follow_up.length === 0) {
@@ -159,7 +165,7 @@ const JoinRequestForm = () => {
 
       setPreviewEmail(response["data"]);
       setEmailCardVisibility(true);
-      toast.success("success")
+      toast.success("success");
     } catch (error: any) {
       console.log("I caught the error at the frontend.");
 
@@ -182,9 +188,18 @@ const JoinRequestForm = () => {
       <div className="w-full max-w-4xl flex flex-col items-center gap-6">
         <Card className="w-full max-w-3xl shadow-2xl border-0">
           <div className="p-8 space-y-6 rounded-md shadow-md">
-            <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
-              Use Connectify-AI
-            </h1>
+            {/* <img className="rounded-lg" src="./src/assets/Connectify-AI.png" width={60} height={60}/> */}
+            <div className="flex items-center justify-center space-x-4">
+              <img
+                src="./src/assets/Connectify-AI.png" // ✅ replace with your actual path
+                alt="Connectify AI Logo"
+                width={70} height={70}
+                className=" rounded-md"
+              />
+              <h1 className="text-4xl sm:text-5xl font-bold text-gray-800">
+                Connectify-AI
+              </h1>
+            </div>
 
             <p className="text-center text-gray-500 text-sm">
               Generate personalized cold emails for job outreach
@@ -224,7 +239,9 @@ const JoinRequestForm = () => {
                 onChange={(e) => handleChange("employer", e.target.value)}
                 className="bg-white rounded-lg px-4 py-2"
               />
-              <small className="text-gray-400 text-sm">e.g.,David B - Director of Engineering</small>
+              <small className="text-gray-400 text-sm">
+                e.g.,David B - Director of Engineering
+              </small>
               {error.employer && (
                 <p className="text-red-500 text-sm">{error.employer}</p>
               )}
@@ -293,7 +310,7 @@ const JoinRequestForm = () => {
               />
             )}
 
-            <Button   
+            <Button
               disabled={isLoading}
               onClick={handleSubmit}
               className=" bg-indigo-600 
@@ -318,9 +335,8 @@ const JoinRequestForm = () => {
                     className="text-gray-700  hover:text-black transition border-2 hover:border-slate-700 duration-300  rounded-lg p-2"
                   >
                     {isLoading ? "Loading..." : "Not Interested"}
+                  </button>
 
-                </button>
-                                                                       
                   <button
                     className="text-gray-500 hover:text-black transition"
                     aria-label="Copy email text"
