@@ -71,7 +71,6 @@ const JoinRequestForm = () => {
 
   const handleSubmitDissatisfied = async () => {
     setLoading(true);
-    console.log("Form data : ", formData);
 
     if (!validateForm()) {
       setLoading(false);
@@ -124,7 +123,6 @@ const JoinRequestForm = () => {
 
   const handleSubmit = async () => {
     setLoading(true);
-    console.log("Form data : ", formData);
 
     if (!validateForm()) {
       setLoading(false);
@@ -139,7 +137,6 @@ const JoinRequestForm = () => {
 
     if (formData.reason.length === 0 && formData.follow_up.length === 0) {
       setLoading(false);
-      console.log("exe here !");
       alert("Please fill the 'reason'/'follow-up' text-field .");
       return;
     }
@@ -157,17 +154,12 @@ const JoinRequestForm = () => {
     try {
       let response = await generateAiEmail(requestPayload);
       setLoading(false);
-      console.log("Here this the response : ");
-      console.log(response);
 
-      console.log("email template ");
-      console.log(response["data"]);
-
+     
       setPreviewEmail(response["data"]);
       setEmailCardVisibility(true);
       toast.success("success");
     } catch (error: any) {
-      console.log("I caught the error at the frontend.");
 
       if (error.message === "TOO_MANY_REQUESTS") {
         toast.error("Too Many Requests... You got to slow down Bro !!");
@@ -188,7 +180,6 @@ const JoinRequestForm = () => {
       <div className="w-full max-w-4xl flex flex-col items-center gap-6">
         <Card className="w-full max-w-3xl shadow-2xl border-0">
           <div className="p-8 space-y-6 rounded-md shadow-md">
-            {/* <img className="rounded-lg" src="./src/assets/Connectify-AI.png" width={60} height={60}/> */}
             <div className="flex items-center justify-center space-x-4">
               <img
                 src="/Connectify-AI.png" // ✅ replace with your actual path
