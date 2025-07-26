@@ -13,7 +13,7 @@ export interface GenerateMailPayload {
 }
 
 
-export const generateDissatisfiedEmail = async (payload : GenerateMailPayload, flag : boolean) => {
+export const generateDissatisfiedEmail = async (payload : GenerateMailPayload) => {
     console.log(import.meta.env.BASE_URL);
     try {
         const response = await axios.post(`${BASE_URL}/generate-email`, payload,{

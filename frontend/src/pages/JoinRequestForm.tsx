@@ -96,7 +96,7 @@ const JoinRequestForm = () => {
     };
 
     try {
-      let response = await generateDissatisfiedEmail(requestPayload, true);
+      let response = await generateDissatisfiedEmail(requestPayload);
       setLoading(false);
       console.log("Here this the response : ");
       console.log(response);
