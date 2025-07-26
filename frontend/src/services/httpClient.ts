@@ -24,9 +24,34 @@ export interface GenerateMailPayload {
 }
 
 
+export const generateDissatisfiedEmail = async (payload : GenerateMailPayload, flag : boolean) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/generate-email`, payload,{
+            params:{
+                flag:true
+            }
+        });
+
+
+        console.log("The response status is ", response.status);
+        return response.data;
+    } catch (error : any) {
+        console.error("Something went wrong : ", error);
+
+        if (error.response?.status === 429) {
+            throw new Error("TOO_MANY_REQUESTS");
+        }
+        throw new Error("GENERIC_ERROR");
+    }
+}
+
 export const generateAiEmail = async (payload: GenerateMailPayload) => {
     try {
-        const response = await axios.post(`${BASE_URL}/generate-email`, payload);
+        const response = await axios.post(`${BASE_URL}/generate-email`, payload,{
+            params: {
+                flag : false
+            }
+        });
         console.log("The response status is ", response.status);
         return response.data;
     } catch (error: any) {
